@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>To-do-list</title>
+                <link rel="stylesheet" href="style.css">
+                </head>
+                <body>
+                    <div class="container">
+                            <div class="todo-app">
+                                        <h2>To-do-list<img src="images/icon.png"></h2>
+                                                    <div class="row">
+                                                                    <input type="text" id="input-box" placeholder="Add Your Text">
+                                                                                    <button onclick="add()">ADD</button>
+                                                                                                </div>
+                                                                                                            <ul id="list-container">
+                                                                                                                            <!-- <li class="checked">TASK-1</li>
+                                                                                                                                            <li>TASK-1</li>
+                                                                                                                                                            <li>TASK-1</li> -->
+                                                                                                                                                                        </ul>
+                                                                                                                                                                                </div>
+                                                                                                                                                                                    </div>
+                                                                                                                                                                                    <script>
+                                                                                                                                                                                    const inputbox = document.getElementById("input-box");
+                                                                                                                                                                                    const listcontainer = document.getElementById("list-container");
+
+                                                                                                                                                                                    function add() {
+                                                                                                                                                                                      if (inputbox.value === "") {
+                                                                                                                                                                                          alert("Please Enter Something");
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                let li = document.createElement("li");
+                                                                                                                                                                                                    li.innerHTML = inputbox.value;
+                                                                                                                                                                                                        listcontainer.appendChild(li);
+                                                                                                                                                                                                            let span = document.createElement("span");
+                                                                                                                                                                                                                span.innerHTML = "\u00d7";
+                                                                                                                                                                                                                    li.appendChild(span);
+                                                                                                                                                                                                                        
+                                                                                                                                                                                                                            save();
+                                                                                                                                                                                                                                inputbox.value = "";
+                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                  }
+
+                                                                                                                                                                                                                                  listcontainer.addEventListener(
+                                                                                                                                                                                                                                    "click",
+                                                                                                                                                                                                                                      function (e) {
+                                                                                                                                                                                                                                          if (e.target.tagName === "LI") {
+                                                                                                                                                                                                                                                e.target.classList.toggle("checked");
+                                                                                                                                                                                                                                                      save();
+                                                                                                                                                                                                                                                          } else if (e.target.tagName === "SPAN") {
+                                                                                                                                                                                                                                                                e.target.parentElement.remove();
+                                                                                                                                                                                                                                                                      save();
+                                                                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                                                                            },
+                                                                                                                                                                                                                                                                              false
+                                                                                                                                                                                                                                                                              );
+
+                                                                                                                                                                                                                                                                              function save() {
+                                                                                                                                                                                                                                                                                // Send the entire list content to the server for logging
+                                                                                                                                                                                                                                                                                  var xhr = new XMLHttpRequest();
+                                                                                                                                                                                                                                                                                    xhr.open("POST", "log.php", true);
+                                                                                                                                                                                                                                                                                      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                                                                                                                                                                                                                                                                                        xhr.send("action=update&listContent=" + encodeURIComponent(listcontainer.innerHTML));
+                                                                                                                                                                                                                                                                                        }
+
+                                                                                                                                                                                                                                                                                        function showTask() {
+                                                                                                                                                                                                                                                                                          listcontainer.innerHTML = localStorage.getItem("data");
+                                                                                                                                                                                                                                                                                          }
+
+                                                                                                                                                                                                                                                                                          showTask();
+                                                                                                                                                                                                                                                                                          </script>
+
+                                                                                                                                                                                                                                                                                          </body>
+                                                                                                                                                                                                                                                                                          </html>
