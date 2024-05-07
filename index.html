@@ -1,74 +1,411 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>To-do-list</title>
-                <link rel="stylesheet" href="style.css">
-                </head>
-                <body>
-                    <div class="container">
-                            <div class="todo-app">
-                                        <h2>To-do-list<img src="images/icon.png"></h2>
-                                                    <div class="row">
-                                                                    <input type="text" id="input-box" placeholder="Add Your Text">
-                                                                                    <button onclick="add()">ADD</button>
-                                                                                                </div>
-                                                                                                            <ul id="list-container">
-                                                                                                                            <!-- <li class="checked">TASK-1</li>
-                                                                                                                                            <li>TASK-1</li>
-                                                                                                                                                            <li>TASK-1</li> -->
-                                                                                                                                                                        </ul>
-                                                                                                                                                                                </div>
-                                                                                                                                                                                    </div>
-                                                                                                                                                                                    <script>
-                                                                                                                                                                                    const inputbox = document.getElementById("input-box");
-                                                                                                                                                                                    const listcontainer = document.getElementById("list-container");
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-                                                                                                                                                                                    function add() {
-                                                                                                                                                                                      if (inputbox.value === "") {
-                                                                                                                                                                                          alert("Please Enter Something");
-                                                                                                                                                                                            } else {
-                                                                                                                                                                                                let li = document.createElement("li");
-                                                                                                                                                                                                    li.innerHTML = inputbox.value;
-                                                                                                                                                                                                        listcontainer.appendChild(li);
-                                                                                                                                                                                                            let span = document.createElement("span");
-                                                                                                                                                                                                                span.innerHTML = "\u00d7";
-                                                                                                                                                                                                                    li.appendChild(span);
-                                                                                                                                                                                                                        
-                                                                                                                                                                                                                            save();
-                                                                                                                                                                                                                                inputbox.value = "";
-                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                  }
+  <style>
+    /* Reset and basic styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-                                                                                                                                                                                                                                  listcontainer.addEventListener(
-                                                                                                                                                                                                                                    "click",
-                                                                                                                                                                                                                                      function (e) {
-                                                                                                                                                                                                                                          if (e.target.tagName === "LI") {
-                                                                                                                                                                                                                                                e.target.classList.toggle("checked");
-                                                                                                                                                                                                                                                      save();
-                                                                                                                                                                                                                                                          } else if (e.target.tagName === "SPAN") {
-                                                                                                                                                                                                                                                                e.target.parentElement.remove();
-                                                                                                                                                                                                                                                                      save();
-                                                                                                                                                                                                                                                                          }
-                                                                                                                                                                                                                                                                            },
-                                                                                                                                                                                                                                                                              false
-                                                                                                                                                                                                                                                                              );
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #FEF1E9;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 10vh;
+    }
 
-                                                                                                                                                                                                                                                                              function save() {
-                                                                                                                                                                                                                                                                                // Send the entire list content to the server for logging
-                                                                                                                                                                                                                                                                                  var xhr = new XMLHttpRequest();
-                                                                                                                                                                                                                                                                                    xhr.open("POST", "log.php", true);
-                                                                                                                                                                                                                                                                                      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                                                                                                                                                                                                                                                                                        xhr.send("action=update&listContent=" + encodeURIComponent(listcontainer.innerHTML));
-                                                                                                                                                                                                                                                                                        }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 15px;
+      background-color: #FEF1E9;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
 
-                                                                                                                                                                                                                                                                                        function showTask() {
-                                                                                                                                                                                                                                                                                          listcontainer.innerHTML = localStorage.getItem("data");
-                                                                                                                                                                                                                                                                                          }
+    /* Header Section */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      background-color: #793C29;
+      height: 120px;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+    }
 
-                                                                                                                                                                                                                                                                                          showTask();
-                                                                                                                                                                                                                                                                                          </script>
+    .header h1 {
+      margin-bottom: 5px;
+    }
 
-                                                                                                                                                                                                                                                                                          </body>
-                                                                                                                                                                                                                                                                                          </html>
+    .duration {
+      margin: 0 10px 0 0;
+      font-size: 15px;
+    }
+
+    /* Stat Cards */
+    .stat-cards {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      position: relative;
+      background-color: #F6E9E1;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      padding: 40px 0px 20px 0px;
+      border-radius: 10px;
+      text-align: center;
+      flex: 1;
+      margin: 0 10px 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-arrow {
+      position: absolute;
+      background: #793C29;
+      border-radius: 800px;
+      margin: 10px;
+      left: 0;
+      top: 0;
+      padding: 0 6px;
+      font-size: 20px;
+      color: white;
+    }
+
+    .card-2 {
+      position: absolute;
+      margin: 5px;
+      right: 0;
+      top: 0px;
+      padding: 5px;
+      font-size: 23px;
+      color: black;
+    }
+
+    .tilted-book {
+      font-size: 14px;
+      transform: translate(0px, -2px);
+    }
+
+    .indicator {
+      width: 18px;
+      height: 9px;
+      border-radius: 20px;
+      margin: 5px 5px 0 5px;
+      display: inline-block;
+    }
+
+    .reading-indicator {
+      background-color: darkorange;
+    }
+
+    .chanting-indicator {
+      background-color: #46EA78;
+    }
+
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .card-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .card-label {
+      font-size: 18px;
+      color: black;
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+      position: absolute;
+      top: 11%;
+      left: 80%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+    }
+
+    .progress-bar__background {
+      fill: none;
+      stroke: #FEF1E9;
+      stroke-width: 3.5px;
+    }
+
+    .progress-bar__percentage {
+      font-size: 1px;
+      color: black;
+    }
+
+    .progress-bar__progress {
+      fill: none;
+      stroke: #46EA78;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      stroke-linecap: round;
+      stroke-width: 3.5px;
+      transition: stroke-dashoffset 1s ease-in-out;
+    }
+
+    .progress-bar__progress1 {
+      fill: none;
+      stroke: darkorange;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      stroke-linecap: round;
+      stroke-width: 3.5px;
+      transition: stroke-dashoffset 1s ease-in-out;
+    }
+
+    /* Progress 2.0 */
+    @keyframes growProgressBar {
+      0%, 33% { --pgPercentage: 0; }
+      100% { --pgPercentage: var(--value); }
+    }
+
+    @property --pgPercentage {
+      syntax: '<number>';
+      inherits: false;
+      initial-value: 0;
+    }
+
+    div[role="progressbar"] {
+      --size: 7rem;
+      --fg: darkorange;
+      --bg: #D1D1CF;
+      --pgPercentage: var(--value);
+      animation: growProgressBar 3s 1 forwards;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 90%;
+      display: grid;
+      margin: 10px;
+      place-items: center;
+      background: radial-gradient(closest-side, #F6E9E1 82%, transparent 0 99.9%, #D1D1CF 0),
+                  conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0);
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: calc(var(--size) / 5);
+      color: black;
+    }
+
+    div[role="progressbar"]::before {
+      counter-reset: percentage var(--value);
+    }
+
+    /* Notes */
+    .contaiiner {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #793C29;
+      border-radius: 10px;
+    }
+
+    .month-header {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    .note-container {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .note {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      background-color: #FEF1E9;
+      padding: 10px;
+      color: black;
+      border-radius: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .note-content[contenteditable="true"]:focus {
+      border-color: transparent;
+      outline: none;
+    }
+
+    .note-content[contenteditable="true"]:empty:before {
+      content: attr(placeholder);
+      color: #787563;
+    }
+
+    .note-placeholder {
+      color: white;
+    }
+
+    .add-note {
+      /* Required */
+    }
+
+    .month-header__controls {
+      display: inline-block;
+      float: right;
+      justify-content: flex-end;
+    }
+
+    .month-header__control {
+      margin-left: 5px;
+      color: white;
+      text-decoration: none;
+      font-size: 24px;
+    }
+
+    .additional-text {
+      position: absolute;
+      color: black;
+      font-size: 19px;
+      top: 11px;
+      left: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <div class="text">
+        <h1>Your Activity</h1>
+        <span><h3>&nbsp;15 Days</h3></span>
+        <div class="reading-indicator indicator"></div>
+        <span class="duration">sleep</span>
+        <div class="chanting-indicator indicator"></div>
+        <span class="duration">wake up</span>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-bars">
+        <svg class="progress-bar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+          <circle class="progress-bar__background" cx="18" cy="18" r="16" />
+          <circle class="progress-bar__progress1 js-progress-bar" cx="18" cy="18" r="16" />
+          <circle class="progress-bar__background" cx="18" cy="18" r="11" />
+          <circle class="progress-bar__progress js-progress-bar" cx="18" cy="18" r="11" />
+          <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="white" font-size="8px" transform="rotate(90 18 18)">🕔</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-cards">
+      <div class="card">
+        
+       <span class="card-arrow" style="font-size: 15.5px; padding: 1.5px 4px;"><i class="fas fa-om"></i>
+      </span>
+        <span class="additional-text">Chanting</span>
+        <span class="card-2">&#x2197;</span>
+        <div role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="--value:65">
+          <div class="card-label">10<br>Rounds</div>
+        </div>
+      </div>
+      <div class="card" style="margin: 0 0px 0 5px;">
+        <span class="card-arrow"><i class="fas fa-book tilted-book"></i></span>
+        <span class="additional-text">Reading</span>
+        <span class="card-2">&#x2197;</span>
+        <div role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="--value:65">
+          <div class="card-label">45<br>Pages</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="contaiiner">
+      <div class="month-header">May 2024
+        <div class="month-header__controls">
+          <a href="#" class="month-header__control add-note">+</a>
+          <a href="#" class="month-header__control">&lt;</a>
+          <a href="#" class="month-header__control">&gt;</a>
+        </div>
+      </div>
+      <div class="note-container">
+        <div class="note">
+          <div class="note-content" contenteditable="true">To-do list</div>
+          <div class="note-content" contenteditable="true" placeholder="Write something..."></div>
+        </div>
+        <div class="note">
+          <div class="note-content" contenteditable="true">Untitled</div>
+          <div class="note-content" contenteditable="true" placeholder="Write something..."></div>
+        </div>
+        <div class="note">
+          <div class="note-content" contenteditable="true">Untitled</div>
+          <div class="note-content" contenteditable="true" placeholder="Write something..."></div>
+        </div>
+        <div class="note">
+          <div class="note-content" contenteditable="true">Untitled</div>
+          <div class="note-content" contenteditable="true" placeholder="Write something..."></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      var percentageComplete = 0.5; // Adjust the completion percentage as needed
+      var strokeDashOffsetValue = 100 - (percentageComplete * 100);
+      var progressBar = $(".js-progress-bar");
+      progressBar.css("stroke-dashoffset", strokeDashOffsetValue);
+    });
+
+    // Notes
+    const noteContainer = document.querySelector('.note-container');
+    const addNoteButton = document.querySelector('.add-note');
+
+    addNoteButton.addEventListener('click', addNewNote);
+
+    function addNewNote() {
+      const newNote = document.createElement('div');
+      newNote.classList.add('note');
+      newNote.innerHTML = `
+        <div class="note-content" contenteditable="true">Untitled</div>
+        <div class="note-content" contenteditable="true" placeholder="Write something..."></div>
+      `;
+      noteContainer.appendChild(newNote);
+      setupNoteEvents(newNote);
+    }
+
+    function setupNoteEvents(note) {
+      const noteContent = note.querySelector('.note-content');
+      const notePlaceholder = note.querySelector('.note-placeholder');
+
+      notePlaceholder.addEventListener('click', () => {
+        notePlaceholder.style.display = 'none';
+        noteContent.focus();
+      });
+
+      noteContent.addEventListener('blur', () => {
+        if (noteContent.textContent.trim() === '') {
+          notePlaceholder.style.display = 'block';
+        }
+      });
+    }
+
+    const initialNote = document.querySelector('.note');
+    setupNoteEvents(initialNote);
+  </script>
+</body>
+</html>
