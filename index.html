@@ -25,7 +25,7 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 100%;
       width: 100%;
       padding: 15px;
       background-color: #FEF1E9;
@@ -35,12 +35,11 @@
 
     /* Header Section */
     .header {
-      display: flex;
+      display: grid;
       flex-direction: column;
       align-items: flex-start;
       margin-bottom: 20px;
       background-color: #793C29;
-      height: 120px;
       padding: 20px;
       border-radius: 10px;
       color: white;
@@ -137,13 +136,16 @@
     }
 
     /* Progress Bar */
-    .progress-bar {
-      position: absolute;
-      top: 11%;
-      left: 80%;
-      transform: translate(-50%, -50%) rotate(-90deg);
-    }
-
+.progress-bar {
+  z-index: 1;
+  position: absolute;
+  top: -25px;
+  left: 80%;
+  
+  transform: translateX(-50%);
+  width: 100px; /* Adjust the width as desired */
+  height: 200px; /* Adjust the height as desired */
+}
     .progress-bar__background {
       fill: none;
       stroke: #FEF1E9;
@@ -213,7 +215,7 @@
     /* Notes */
     .contaiiner {
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      max-width: 600px;
+      max-width: 100%;
       margin: 0 auto;
       padding: 20px;
       background-color: #793C29;
@@ -233,6 +235,7 @@
       flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 20px;
+      width:100%;
     }
 
     .note {
